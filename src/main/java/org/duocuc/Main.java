@@ -1,31 +1,57 @@
 package org.duocuc;
 
-import manager.DiscountManager;
-import singleton.Singleton;
+import command.AddToCartCommand;
+import command.RemoveFromCartCommand;
+import command.ShoppingCart;
+import command.UpdateQuantityCommand;
+import decorator.CategoryDiscount;
+import decorator.Component;
+import decorator.Product;
+import decorator.TenPercentDiscount;
+import singleton.DiscountManager;
+
 
 public class Main {
     public static void main(String[] args) {
-//        Singleton singleton = Singleton.getInstance();
-//        System.out.println(singleton);
-//        Singleton singleton2 = Singleton.getInstance();
-//        System.out.println(singleton2);
-//        if (singleton == singleton2) {
-//            System.out.println("singleton equals singleton2");
-//        } else {
-//            System.out.println("singleton not equals singleton2");
-//        }
-        DiscountManager discountManager = DiscountManager.getInstance();
+
+        // Singleton Pattern Example
+        System.out.println("Singleton Pattern Example:");
+        DiscountManager discountManager1 = DiscountManager.getInstance();
+        DiscountManager discountManager2 = DiscountManager.getInstance();
+        System.out.println("Are both discount managers the same instance? " + (discountManager1 == discountManager2));
+        System.out.println();
+
+        // Decorator Pattern Example
+        System.out.println("Decorator Pattern Example:");
+        Component baseProduct = new Product();
+        Component tenPercentOffProduct = new TenPercentDiscount(baseProduct);
+        Component categoryDiscountProduct = new CategoryDiscount(baseProduct);
+        Component combinedDiscountProduct = new TenPercentDiscount(new CategoryDiscount(baseProduct));
 
         double originalPrice = 100.0;
+        System.out.println("Original price: $" + originalPrice);
+        System.out.println("Price with 10% discount: $" + discountManager1.applyDiscount(originalPrice, tenPercentOffProduct));
+        System.out.println("Price with category discount: $" + discountManager1.applyDiscount(originalPrice, categoryDiscountProduct));
+        System.out.println("Price with combined discounts: $" + discountManager1.applyDiscount(originalPrice, combinedDiscountProduct));
+        System.out.println();
 
-        System.out.println("Precio original: $" + originalPrice);
-        System.out.println("Precio con descuento normal: $" + discountManager.applyDiscount(originalPrice, "NORMAL"));
-        System.out.println("Precio con descuento VIP: $" + discountManager.applyDiscount(originalPrice, "VIP"));
-        System.out.println("Precio con descuento especial: $" + discountManager.applyDiscount(originalPrice, "SPECIAL"));
-        System.out.println("Precio sin descuento: $" + discountManager.applyDiscount(originalPrice, "NONE"));
+        // Command Pattern Example
+        System.out.println("Command Pattern Example:");
+        ShoppingCart cart = new ShoppingCart();
 
-        // Demostrar que siempre se obtiene la misma instancia
-        DiscountManager anotherDiscountManager = DiscountManager.getInstance();
-        System.out.println("¿Es la misma instancia? " + (discountManager == anotherDiscountManager));
-    }
+        cart.addCommand(new AddToCartCommand("T-shirt"));
+        cart.addCommand(new AddToCartCommand("Jeans"));
+        cart.addCommand(new AddToCartCommand("Shoes"));
+        cart.addCommand(new RemoveFromCartCommand("T-shirt"));
+        cart.addCommand(new UpdateQuantityCommand("Jeans", 2));
+
+        System.out.println("Executing shopping cart commands:");
+        cart.executeCommands();
+
+        // Demonstrating adding more commands after execution
+        System.out.println("\nAdding more items to cart:");
+        cart.addCommand(new AddToCartCommand("Hat"));
+        cart.addCommand(new UpdateQuantityCommand("Shoes", 3));
+        cart.executeCommands();
+        }
 }
