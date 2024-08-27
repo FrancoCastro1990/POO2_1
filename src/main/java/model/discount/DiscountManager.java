@@ -1,6 +1,4 @@
-package singleton;
-
-import decorator.Component;
+package model.discount;
 
 public class DiscountManager {
     private static DiscountManager instance;
@@ -14,7 +12,7 @@ public class DiscountManager {
         return instance;
     }
 
-    public double applyDiscount(double price, Component discountStrategy) {
-        return discountStrategy.applyDiscount(price);
+    public double applyDiscount(double price, Discount discount) {
+        return discount.apply(price);
     }
 }
